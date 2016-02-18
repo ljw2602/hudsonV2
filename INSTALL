@@ -1,0 +1,31 @@
+Windows
+=======
+Hudson was developed on Windows 2000 using VS7 and MacOS 10.4 (Tiger) with g++ 4.0.1.
+If you are compiling under Windows, simply open one of the solution files under the
+'app' sub-directories. Change the Additional include directory and Additional library
+directory options to point to your TA-LIB, GSL and Boost installations.
+The solution is setup to automatically compile the library files under 'lib' and
+link the application.
+
+Linux/MacOS
+===========
+You should have the following files in your root directory: 
+
+COPYING  INSTALL  TODO     db       lib
+Doxyfile README   app      doc      results
+
+cd to the 'lib' directory and make sure the -I and -L are point to valid directories
+in your system where the TA-LIB, GSL and Boost installations are. Run 'make' to 
+compile the Hudson library, then move to each 'app' sub-directory to compile the
+example programs:
+
+# cd lib
+# make
+
+# cd ../app/JanTrader
+# make
+
+That's it. Do this for each directory under 'app', then run the examples using the
+options specified in each example directory README file.
+Report any problem to <albertogiannetti@gmail.com>.
+

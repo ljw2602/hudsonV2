@@ -1,0 +1,6 @@
+This directory contains free historical data collected from various websites. See SOURCES for a
+comprehensive list of historical data resources.
+
+Some of the files in this directory are pre-processed to meet the Date_DDMMMYYY,CLOSE format used 
+by the Hudson DMYClose driver.
+Yahoo .csv files are parsed using the Yahoo driver.

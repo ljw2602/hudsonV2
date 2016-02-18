@@ -1,0 +1,1 @@
+./jan --long_dbfile ../../db/DFSCX.csv --long_symbol DFSCX --hedge_dbfile ../../db/SPX.csv --hedge_symbol SPX --begin_date 1960-1-1 --end_date 2007-8-31

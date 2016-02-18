@@ -1,0 +1,2 @@
+./vix --spx_file ../../db/SPX.csv --vix_file ../../db/VIX.csv  --begin_date 1980-1-1 --end_date 2007-10-1
+

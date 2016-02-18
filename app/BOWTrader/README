@@ -1,0 +1,2 @@
+./bow --series_file ../../db/SPX.csv --symbol SPX --begin_date 1980-1-1 --end_date 2007-11-1
+

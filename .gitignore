@@ -3,6 +3,7 @@
 *.lo
 *.o
 *.obj
+*.d
 
 # Precompiled Headers
 *.gch
@@ -26,3 +27,11 @@
 *.exe
 *.out
 *.app
+
+# Compiled binaries
+app/AATrader/aa
+app/AATraderMACD/aaMACD
+app/EOMTrader/eom
+app/JanTrader/jan
+app/VIXTrader/vix
+

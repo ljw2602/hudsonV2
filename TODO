@@ -1,0 +1,12 @@
+- Revisit factor functions to include Price::get(). Remove obsolete Series dependencies.
+- Fix point-in-time factor() functions to only include executions preceding requested
+  date factor calculation. Right now only average buy/short price is used to calculate
+  point-in-time factors.
+- Improve positions peak and drawdown calculation speed.
+- Add equity curve.
+- Add data series database (only flat files are currently supported).
+- Add StrategyPosition monthly return support.
+- Add excursion statistics (MAE MFE).
+- Add slippage and commissions factors.
+- Add support for intraday series.
+- Add real monthly risk-free rate of return historical data (currently defaults to 3%).
