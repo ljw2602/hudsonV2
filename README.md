@@ -5,3 +5,4 @@
   1. Dollar account
   2. Position size
   3. Better class design
+  4. Debug (read DEBUG.md)
