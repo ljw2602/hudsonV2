@@ -1,6 +1,6 @@
 # hudson v.2
 - Required packages: boost, ta-lib, and gsl (installed under /usr/local)
-- Installation: read INSTALL
+- Installation: read archive/INSTALL
 - Description of enhancement (details in Wiki):
   1. Bankroll
   2. Position size
