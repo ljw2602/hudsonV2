@@ -63,7 +63,7 @@ void VIXTrader::run(void) throw(TraderException)
                     continue;
                 }
                 
-                buy(_spx_db.name(), iter_entry->first, Price(iter_entry->second.open));
+                buy(_spx_db.name(), iter_entry->first, Price(iter_entry->second.open),2);
             }
             
             // Check sell signal

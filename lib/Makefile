@@ -54,7 +54,10 @@ SRCS=\
 	Trader.cpp \
 	BnHTrader.cpp \
 	StdAfx.cpp \
-	TA.cpp
+	TA.cpp \
+	Bankroll.cpp \
+	Transaction.cpp \
+	TransactionSet.cpp
 
 HDRS=\
 	FileDriver.hpp \
@@ -93,7 +96,11 @@ HDRS=\
 	Trader.hpp \
 	BnHTrader.hpp \
 	Price.hpp \
-	TA.hpp
+	TA.hpp \
+	Bankroll.hpp \
+	Transaction.hpp \
+	TransactionPtr.hpp \
+	TransactionSet.hpp
 
 INCLUDES= \
 	-I. \

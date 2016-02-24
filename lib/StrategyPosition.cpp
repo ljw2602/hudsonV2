@@ -49,7 +49,7 @@ void StrategyPosition::update(const ExecutionPtr pExe)
 #endif
 
   if( _sExecutions.insert(pExe).second == false )
-    throw PositionException("Can not insert execution in StrategyPosition set");
+    throw PositionException("Cannot insert execution in StrategyPosition set");
 }
 
 

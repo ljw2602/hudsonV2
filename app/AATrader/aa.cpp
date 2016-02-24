@@ -35,6 +35,7 @@
 #include <PositionsReport.hpp>
 #include <PortfolioReturns.hpp>
 #include <PortfolioReport.hpp>
+#include <Bankroll.hpp>
 
 #include "AATrader.hpp"
 
@@ -149,6 +150,10 @@ int main(int argc, char* argv[])
         cout << "REIT Total days: " << reit_db.duration().days() << endl;
         
         // Initialize and run strategy
+        double initial_capital = 10000;
+        Bankroll::instance().set_initial_capital(initial_capital);
+        cout << "Initial capital: $" << Bankroll::instance().get_initial_capital() << endl;
+
         AATrader trader(spx_db, tnx_db, djc_db, eafe_db, reit_db);
         trader.run();
         

@@ -43,7 +43,7 @@ _size(0)
 
 void Position::print(void) const
 {
-    cout << _symbol << ":";
+    cout << _symbol << " [Pos ID: " << id() << "]" << ":";
     _sExecutions.print();
     
     if( open() )

@@ -29,7 +29,7 @@ using namespace std;
 
 Execution::ID ExecutionSet::_eid = 0;
 
-
+#include "Trader.hpp"
 ExecutionSet::ExecutionSet(void)
 {
 }
