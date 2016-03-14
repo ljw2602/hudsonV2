@@ -119,12 +119,9 @@ int main(int argc, char* argv[])
         /*
          * Initialize and run strategy
          */
-        string initial_capital("10000");
-        Bankroll::instance().set_initial_capital(initial_capital);
-        cout << "Initial capital: $" << Bankroll::instance().get_initial_capital() << endl;
-        
+        string initial_capital("10000");        
         VIXTrader trader(spx_db, vix_db);
-        trader.run();
+        trader.run(initial_capital);
         PositionSet all_positions(trader.positions());
         
         /*
@@ -158,6 +155,7 @@ int main(int argc, char* argv[])
          */
         Report::header("Bankroll");
         Bankroll::instance().print();
+        Bankroll::instance().print_capital();
         
     } catch( std::exception& ex ) {
         

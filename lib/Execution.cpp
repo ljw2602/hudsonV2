@@ -25,7 +25,7 @@
 // Hudson
 #include "Execution.hpp"
 #include "Position.hpp"
-#include "Bankroll.hpp"
+#include "EODBalanceSet.hpp"
 
 using namespace std;
 using namespace boost::gregorian;
@@ -56,29 +56,40 @@ void Execution::print(void) const
 BuyExecution::BuyExecution(const std::string& symbol, Execution::ID id, const date& dt, const Price& price, unsigned size):
 Execution(symbol, id, dt, price, size)
 {
-    std::cout << symbol;
+    std::cout << symbol << " ";
     this->print();
     std::cout << std::endl;
-    Bankroll::instance().update_capital(this);
+    EODBalanceSet::instance().update_capital(this);
 }
 
 
 SellExecution::SellExecution(const std::string& symbol, Execution::ID id, const date& dt, const Price& price, unsigned size):
 Execution(symbol, id, dt, price, size)
 {
-    Bankroll::instance().update_capital(this);
+    std::cout << symbol << " ";
+    this->print();
+    std::cout << std::endl;
+    EODBalanceSet::instance().update_capital(this);
 }
 
 
 SellShortExecution::SellShortExecution(const std::string& symbol, Execution::ID id, const date& dt, const Price& price, unsigned size):
 Execution(symbol, id, dt, price, size)
 {
-    Bankroll::instance().update_capital(this);
+    
+    std::cout << symbol << " ";
+    this->print();
+    std::cout << std::endl;
+    EODBalanceSet::instance().update_capital(this);
 }
 
 
 CoverExecution::CoverExecution(const std::string& symbol, Execution::ID id, const date& dt, const Price& price, unsigned size):
 Execution(symbol, id, dt, price, size)
 {
-    Bankroll::instance().update_capital(this);
+    
+    std::cout << symbol << " ";
+    this->print();
+    std::cout << std::endl;
+    EODBalanceSet::instance().update_capital(this);
 }

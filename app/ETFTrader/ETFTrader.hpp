@@ -22,6 +22,7 @@
 
 //STL
 #include <string>
+#include <vector>
 
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
@@ -29,24 +30,36 @@
 // Hudson
 #include <EODSeries.hpp>
 #include <Trader.hpp>
+#include "DBSet.hpp"
 
 
-class VIXTrader: public Trader
+class ETFTrader: public Trader
 {
 public:
-    VIXTrader(const Series::EODSeries& spx_db, const Series::EODSeries& vix_db);
-    
+    ETFTrader(const Series::EODSeries& spx_db,
+              const Series::EODSeries& xly_db,
+              const Series::EODSeries& xlp_db,
+              const Series::EODSeries& xle_db,
+              const Series::EODSeries& xlf_db,
+              const Series::EODSeries& xlv_db,
+              const Series::EODSeries& xli_db,
+              const Series::EODSeries& xlb_db,
+              const Series::EODSeries& xlk_db,
+              const Series::EODSeries& xlu_db);
+
     void run(const std::string&) throw(TraderException);
     
     boost::gregorian::days invested_days(void) { return _invested_days; }
     
 private:
-    const Series::EODSeries& _spx_db;
-    const Series::EODSeries& _vix_db;
-    
     boost::gregorian::date _first_entry;
     boost::gregorian::date _last_exit;
     boost::gregorian::days _invested_days;
+    unsigned _num_trading;
+
+    DBSet _db;
+    std::vector<std::string> _db_names;
+    double openPos_value(const boost::gregorian::date& dt, Series::EODDB::PriceType type);
 };
 
 #endif // _VIXTRADER_HPP_

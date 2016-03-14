@@ -19,6 +19,7 @@
 
 // Hudson
 #include "TA.hpp"
+#include "Bankroll.hpp"
 
 #include "VIXTrader.hpp"
 
@@ -35,21 +36,39 @@ _invested_days(0)
 }
 
 
-void VIXTrader::run(void) throw(TraderException)
+void VIXTrader::run(const string& initial_capital) throw(TraderException)
 {
     TA ta;
     _invested_days = days(0);
     
     Series::EODSeries::const_iterator vix_iter(_vix_db.begin());
     advance(vix_iter, 100); // Skip first 100 bars to give enough room too BBANDS calculation
+    
+    Bankroll::instance().set_initial_capital(vix_iter->first, initial_capital);
+    cout << "Initial capital: $" << Bankroll::instance().get_initial_capital() << endl;
+    
     for( ; vix_iter != _vix_db.end(); ++vix_iter ) {
         
         try {
             
             // Calculate current invested days
-            if( ! _miPositions.open().empty() )
+            // Update EOD balance
+            // Find all "open" positions, EODDB to calculate EOD balance, update() BankRoll
+            if( ! _miPositions.open().empty() ) {
                 _invested_days = _invested_days + days(1);
-            
+                
+                PositionSet openPos = _miPositions.open();
+                for (PositionSet::const_iterator it = openPos.begin(); it != openPos.end(); it++){
+                    //std::cout << (*it)->symbol() << " ";
+                    Series::EODSeries::const_iterator iter_last = _spx_db.before(vix_iter->first);
+                    double last_price = iter_last->second.close;
+                    Series::EODSeries::const_iterator iter_current = _spx_db.find(vix_iter->first);
+                    double current_price = iter_current->second.close;
+                    Bankroll::instance().update_capital(current_price-last_price);
+                }
+                //std::cout << "are open on " << vix_iter->first << std::endl;
+            }
+
             // Calculate VIX BBANDS
             TA::BBRes resBBANDS3 = ta.BBANDS(_vix_db.close(vix_iter, 100), 100, 3, 3);
             TA::BBRes resBBANDS1 = ta.BBANDS(_vix_db.close(vix_iter, 100), 100, 1, 1);

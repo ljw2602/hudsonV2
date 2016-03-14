@@ -55,7 +55,7 @@ SRCS=\
 	BnHTrader.cpp \
 	StdAfx.cpp \
 	TA.cpp \
-	Bankroll.cpp \
+	EODBalanceSet.cpp \
 	Transaction.cpp \
 	TransactionSet.cpp
 
@@ -97,7 +97,7 @@ HDRS=\
 	BnHTrader.hpp \
 	Price.hpp \
 	TA.hpp \
-	Bankroll.hpp \
+	EODBalanceSet.hpp \
 	Transaction.hpp \
 	TransactionPtr.hpp \
 	TransactionSet.hpp

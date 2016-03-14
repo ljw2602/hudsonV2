@@ -1,0 +1,1 @@
+./etf --spx_file ../../db/ETF/^GSPC.csv --xly_file ../../db/ETF/XLY.csv --xlp_file ../../db/ETF/XLP.csv --xle_file ../../db/ETF/XLE.csv --xlf_file ../../db/ETF/XLF.csv --xlv_file ../../db/ETF/XLV.csv --xli_file ../../db/ETF/XLI.csv --xlb_file ../../db/ETF/XLB.csv --xlk_file ../../db/ETF/XLK.csv --xlu_file ../../db/ETF/XLU.csv --begin_date 1999-1-1 --end_date 2015-12-31
