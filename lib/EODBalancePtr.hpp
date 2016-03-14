@@ -9,8 +9,8 @@
 #ifndef dbg_hudson_TransactionPtr_h
 #define dbg_hudson_TransactionPtr_h
 
-#include "Transaction.hpp"
+#include "EODBalance.hpp"
 
-typedef boost::shared_ptr<Transaction> TransactionPtr;
+typedef boost::shared_ptr<EODBalance> EODBalancePtr;
 
 #endif

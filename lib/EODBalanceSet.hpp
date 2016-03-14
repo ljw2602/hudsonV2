@@ -25,38 +25,9 @@
 // Hudson
 #include "Price.hpp"
 #include "ExecutionSet.hpp"
-#include "TransactionSet.hpp"
+#include "EODBalancePtr.hpp"
 #include "PositionSet.hpp"
 
-
-class EODBalanceException: public std::exception
-{
-public:
-    EODBalanceException(const std::string& msg):
-    _Str("EODBalanceException: ")
-    {
-        _Str += msg;
-    }
-    
-    virtual ~EODBalanceException(void) throw() { }
-    virtual const char *what(void) const throw() { return _Str.c_str(); }
-    
-protected:
-    std::string _Str;
-};
-
-struct EODBalance {
-    std::string name;
-    boost::gregorian::date dt;
-    double balance;
-    EODBalance(std::string& name_, boost::gregorian::date dt_, double balance_): name(name_), dt(dt_), balance(balance_) {}
-    EODBalance(const std::string& name_, const boost::gregorian::date dt_, const double balance_): name(name_), dt(dt_), balance(balance_) {}
-    void print() {
-        std::cout << name << "\t" << dt << "\t" << balance << std::endl;
-    }
-};
-
-typedef boost::shared_ptr<EODBalance> EODBalancePtr;
 
 typedef boost::multi_index::multi_index_container <
     EODBalancePtr,
