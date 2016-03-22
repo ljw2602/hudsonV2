@@ -36,7 +36,8 @@
 class ETFTrader: public Trader
 {
 public:
-    ETFTrader(const Series::EODSeries& spx_db,
+    ETFTrader(const Series::EODSeries& equity_db,
+              const Series::EODSeries& treasury_db,
               const Series::EODSeries& xly_db,
               const Series::EODSeries& xlp_db,
               const Series::EODSeries& xle_db,
@@ -48,16 +49,21 @@ public:
               const Series::EODSeries& xlu_db);
 
     void run(const std::string&) throw(TraderException);
+    void summary(void) const;
     
-    boost::gregorian::days invested_days(void) { return _invested_days; }
+    unsigned get_num_trading() const { return _num_trading; }
+    std::set<boost::gregorian::date> get_dailyset(void) const { return date_set_daily; }
+    std::set<boost::gregorian::date> get_monthlyset(void) const { return date_set_monthly; }
+    
+    std::vector<double> get_equity_monthly_ret(void) const;
+    std::vector<double> get_treasury_monthly_ret(void) const;
     
 private:
-    boost::gregorian::date _first_entry;
-    boost::gregorian::date _last_exit;
-    boost::gregorian::days _invested_days;
+    static std::string EQUITY, TREASURY;
     unsigned _num_trading;
-
-    DBSet _db;
+    std::set<boost::gregorian::date> date_set_daily, date_set_monthly;
+    
+    DBSet _db, _benchmark;
     std::vector<std::string> _db_names;
     double openPos_value(const boost::gregorian::date& dt, Series::EODDB::PriceType type);
 };

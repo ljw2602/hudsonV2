@@ -70,6 +70,8 @@ public:
     void update_capital(const boost::gregorian::date&, const PositionSet& openPos); // EOD
 
     void print(void) const;
+    std::map<boost::gregorian::date, double> monthly(const std::set<boost::gregorian::date>&) const;
+    std::vector<double> monthly_ret(const std::set<boost::gregorian::date>&) const;
     void export_to_csv(void) const;
     
 private:

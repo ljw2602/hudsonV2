@@ -55,7 +55,9 @@ SRCS=\
 	BnHTrader.cpp \
 	StdAfx.cpp \
 	TA.cpp \
-	EODBalanceSet.cpp
+	EODBalanceSet.cpp \
+	EquityBenchmarkDriver.cpp \
+	TreasuryBenchmarkDriver.cpp \
 
 HDRS=\
 	FileDriver.hpp \
@@ -97,7 +99,9 @@ HDRS=\
 	TA.hpp \
 	EODBalanceSet.hpp \
 	EODBalance.hpp \
-	EODBalancePtr.hpp
+	EODBalancePtr.hpp \
+	EquityBenchmarkDriver.hpp \
+	TreasuryBenchmarkDriver.hpp \
 
 INCLUDES= \
 	-I. \

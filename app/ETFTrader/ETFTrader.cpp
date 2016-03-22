@@ -22,15 +22,18 @@
 #include <queue>
 #include <algorithm>
 #include <set>
+#include <numeric>
+
+// GSL
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_statistics.h>
 
 // Hudson
 #include "TA.hpp"
 #include "EODBalanceSet.hpp"
 #include "ETFTrader.hpp"
 
-//using namespace std;
 using namespace boost::gregorian;
-//using namespace Series;
 
 /*
  TO DO: ENSURE ALL DB HAS THE SAME TIME STAMP, IF SO, MAKE A SERIES OF DT ONLY FOR TIME STAMP
@@ -38,7 +41,11 @@ using namespace boost::gregorian;
         INCORPORATE DIVIDEND AND SPLIT INTO CONSIDERATION
  */
 
-ETFTrader::ETFTrader(const Series::EODSeries& spx_db,
+std::string ETFTrader::EQUITY("Equity");
+std::string ETFTrader::TREASURY("Treasury");
+
+ETFTrader::ETFTrader(const Series::EODSeries& equity_db,
+                     const Series::EODSeries& treasury_db,
                      const Series::EODSeries& xly_db,
                      const Series::EODSeries& xlp_db,
                      const Series::EODSeries& xle_db,
@@ -48,10 +55,11 @@ ETFTrader::ETFTrader(const Series::EODSeries& spx_db,
                      const Series::EODSeries& xlb_db,
                      const Series::EODSeries& xlk_db,
                      const Series::EODSeries& xlu_db):
-_invested_days(0),
 _num_trading(0)
 {
-    _db.insert ( std::pair<const std::string, DB*>("SPX", new DB(spx_db)) );
+    _benchmark.insert ( std::pair<const std::string, DB*>(EQUITY, new DB(equity_db)) );
+    _benchmark.insert ( std::pair<const std::string, DB*>(TREASURY, new DB(treasury_db)) );
+    
     _db.insert ( std::pair<const std::string, DB*>("XLY", new DB(xly_db)) );
     _db.insert ( std::pair<const std::string, DB*>("XLP", new DB(xlp_db)) );
     _db.insert ( std::pair<const std::string, DB*>("XLE", new DB(xle_db)) );
@@ -129,27 +137,27 @@ double ETFTrader::openPos_value(const boost::gregorian::date& dt, Series::EODDB:
 void ETFTrader::run(const std::string& initial_capital) throw(TraderException)
 {
     TA ta;
-//    _invested_days = days(0);
 
     // Advance daily and monthly iterators to 1 year from beginning
     std::for_each(_db.begin(), _db.end(), run_FF_EOD_iterator);
     std::for_each(_db.begin(), _db.end(), run_FF_EOM_iterator);
+    std::for_each(_benchmark.begin(), _benchmark.end(), run_FF_EOD_iterator);
+    std::for_each(_benchmark.begin(), _benchmark.end(), run_FF_EOM_iterator);
     
     // Create a Set of union of dates, in case DBs have different set of dates
     // Set: An associative container that contains a sorted set of unique objects
-    std::set<boost::gregorian::date> date_set_daily;
     for (std::map<const std::string, DB*>::const_iterator it = _db.begin(); it != _db.end(); it++) {
         for (Series::EODSeries::const_iterator it2 = it->second->it_daily; it2 != it->second->daily.end(); it2++)
             date_set_daily.insert(it2->first);
     }
-    std::set<boost::gregorian::date> date_set_monthly;
     for (std::map<const std::string, DB*>::const_iterator it = _db.begin(); it != _db.end(); it++) {
-        for (Series::EOMSeries::const_iterator it2 = it->second->it_monthly; it2 != it->second->monthly.end(); it2++)
+        for (Series::EOMSeries::const_iterator it2 = it->second->it_monthly; it2 != it->second->monthly.end(); it2++) {
             date_set_monthly.insert(it2->first);
+        }
     }
     std::set<boost::gregorian::date>::const_iterator daily_iter = date_set_daily.begin();
     std::set<boost::gregorian::date>::const_iterator monthly_iter = date_set_monthly.begin();
-
+    
     // Ensure all daily DBs have the same date as date_set_daily
     
     
@@ -176,31 +184,36 @@ void ETFTrader::run(const std::string& initial_capital) throw(TraderException)
                 switch (req.type) {
                     case request::BUY:{
                         buy(req.name, today, Price(_db.at(req.name)->it_daily->second.open), req.shares);
-                        break;}
+                        _num_trading++;
+                        break;
+                    }
                         
                     case request::SELL:{
                         throw TraderException("Sell request is not valid in ETFTrader");
-                        break;}
+                        break;
+                    }
                         
                     case request::SELL_SHORT:{
                         sell_short(req.name, today, Price(_db.at(req.name)->it_daily->second.open), req.shares);
-                        break;}
+                        break;
+                    }
                         
                     case request::COVER:{
                         throw TraderException("Sell request is not valid in ETFTrader");
-                        break;}
+                        break;
+                    }
                 
                     case request::CLOSE:{
                         PositionPtr pPos = (*ps.begin());
                         close(pPos->id(), today, Price(_db.at(req.name)->it_daily->second.open));
-                        break;}
+                        break;
+                    }
                         
                     default:
                         throw TraderException("Zero share trading request");
                 }
                 
                 reservation.pop();
-                _num_trading++;
                 latest_pos_value = openPos_value(today, Series::EODDB::OPEN);
             }
             
@@ -218,21 +231,29 @@ void ETFTrader::run(const std::string& initial_capital) throw(TraderException)
                         max_return = roc;
                     }
                 }
-                std::cout << "Today: " << today << " " << max_return_name << " max return= " << max_return << " (YOY)" << std::endl;
+                std::cout << "Today: " << today << " " << max_return_name << " max return= " << max_return << "% (YOY)" << std::endl;
                 
+                double threshold = 3.0;
                 // pick the best, reserve executions for tmr open,
                 PositionSet ps = _miPositions.open();
-                if ( ps.empty() ) {
+                if ( ps.empty() && max_return > threshold ) {
                     unsigned nshares = 1;
                     reservation.push(request(request::BUY, max_return_name, nshares));
                 }
-                else if ( ps.size() == 1 ) {
+                else if ( ps.empty() && max_return <= threshold ) {
+                    
+                }
+                else if ( ps.size() == 1 && max_return > threshold ) {
                     PositionPtr pPos = (*ps.begin());
                     if ( pPos->symbol() != max_return_name ) {
                         unsigned nshares = 1;
                         reservation.push(request(request::CLOSE, pPos->symbol(), 0));
                         reservation.push(request(request::BUY, max_return_name, nshares));
                     }
+                }
+                else if ( ps.size() == 1 && max_return <= threshold ) {
+                    PositionPtr pPos = (*ps.begin());
+                    reservation.push(request(request::CLOSE, pPos->symbol(), 0));
                 }
                 else {
                     throw TraderException("More than one open position exist");
@@ -261,4 +282,43 @@ void ETFTrader::run(const std::string& initial_capital) throw(TraderException)
     
     return;
     
+}
+
+std::vector<double> ETFTrader::get_equity_monthly_ret(void) const {
+    return _benchmark.at(EQUITY)->monthly_aggregate();
+}
+
+std::vector<double> ETFTrader::get_treasury_monthly_ret(void) const {
+    return _benchmark.at(TREASURY)->monthly_resample();
+}
+
+void ETFTrader::summary(void) const {
+    std::vector<double> portfolio_monthly_ret = EODBalanceSet::instance().monthly_ret(get_monthlyset());  // unit = %
+    std::vector<double> equity_monthly_ret = get_equity_monthly_ret();  // unit = %
+    std::vector<double> treausury_monthly_ret = get_treasury_monthly_ret();  // unit = %
+    
+    assert(portfolio_monthly_ret.size()==equity_monthly_ret.size());
+    for (int i = 0; i < portfolio_monthly_ret.size(); i++) {
+        std::cout << portfolio_monthly_ret[i] << " " << equity_monthly_ret[i] << " " << treausury_monthly_ret[i] << std::endl;
+        portfolio_monthly_ret[i] -= treausury_monthly_ret[i];
+        equity_monthly_ret[i] -= treausury_monthly_ret[i];
+    }
+    
+    gsl_vector_const_view gsl_x = gsl_vector_const_view_array(&equity_monthly_ret[0], equity_monthly_ret.size());
+    gsl_vector_const_view gsl_y = gsl_vector_const_view_array(&portfolio_monthly_ret[0], portfolio_monthly_ret.size());
+    double varx = gsl_stats_variance(gsl_x.vector.data, 1, equity_monthly_ret.size());
+    double covar = gsl_stats_covariance(gsl_x.vector.data, 1, gsl_y.vector.data, 1, portfolio_monthly_ret.size());
+    double beta = covar/varx;
+    
+    double ybar = std::accumulate(equity_monthly_ret.begin(), equity_monthly_ret.end(), 0.0)/equity_monthly_ret.size();
+    double xbar = std::accumulate(portfolio_monthly_ret.begin(), portfolio_monthly_ret.end(), 0.0)/portfolio_monthly_ret.size();
+    double alpha = ybar - beta*xbar;
+    
+    double y_sq_sum = std::inner_product(equity_monthly_ret.begin(), equity_monthly_ret.end(), equity_monthly_ret.begin(), 0.0);
+    double ystdev = std::sqrt(y_sq_sum / equity_monthly_ret.size() - ybar * ybar);
+    double sharpe = ybar / ystdev;
+    
+    std::cout << "Beta: " << beta << std::endl;
+    std::cout << "Alpha: " << alpha << std::endl;
+    std::cout << "Sharpe: " << sharpe << std::endl;
 }

@@ -17,49 +17,50 @@
  * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SERIES_DAYPRICE_HPP_
-#define _SERIES_DAYPRICE_HPP_
+#ifndef _EQUITYBENCHMARKDRIVER_HPP_
+#define _EQUITYBENCHMARKDRIVER_HPP_
 
 #ifdef WIN32
 #pragma warning (disable:4290)
 #endif
 
+// STL
+#include <fstream>
+#include <string>
+
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
 
+// Series
+#include "FileDriver.hpp"
+#include "DayPrice.hpp"
 
 namespace Series
 {
     
-    //! EOD price record.
-    /*!
-     Basic price record used in EOD series such as equity prices
-     */
-    class DayPrice
+    class EquityBenchmarkDriver: public FileDriver
     {
     public:
-        boost::gregorian::date key;
+        EquityBenchmarkDriver(void);
+        ~EquityBenchmarkDriver(void);
         
-        double high; //! High price.
-        double low; //! Low price.
-        double open; //! Open price.
-        double close; //! Close price.
-        double adjclose; //! Adjusted closed. This is the adjusted price to account for split and dividends.
-        unsigned long volume; //! Day volume.
+        virtual bool open(const std::string& filename);
+        virtual void close(void);
+        virtual bool next(DayPrice& dp) throw(DriverException);
+        virtual bool eof(void);
+        
+    private:
+        enum FIELDS_POS {
+            DATE = 0,
+            RETURN
+        };
+        
+    private:
+        std::ifstream _infile;
+        std::string _line;
+        unsigned _linenum;
     };
     
-    //! EOD return record.
-    /*!
-     Basic return record used in EOD series such as benchmark returns
-     */
-    class DayReturn
-    {
-    public:
-        boost::gregorian::date key;
-        
-        double ret; //! Return.
-    };
-    
-} // namespace Series
+}
 
-#endif // _SERIES_DAYPRICE_HPP_
+#endif // _EQUITYBENCHMARKDRIVER_HPP_

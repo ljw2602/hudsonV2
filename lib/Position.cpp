@@ -47,7 +47,7 @@ void Position::print(void) const
     _sExecutions.print();
     
     if( open() )
-        cout << " (" << Series::EODDB::instance().get(_symbol).last().adjclose << ") ";
+        cout << " (" << Series::EODDB::instance().get(_symbol).last().close << ") ";
     
     cout << " - " << "Factor " << factor() << " (" << (factor()-1)*100 << "%)";
 }

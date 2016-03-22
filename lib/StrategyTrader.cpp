@@ -136,7 +136,7 @@ void StrategyTrader::strategy_close( Position::ID strat_id, const boost::gregori
 
     pPos->close(dt, pt);
 
-  } catch( const exception& ex ) {
+  } catch( const std::exception& ex ) {
 
     throw TraderException(ex.what());
   }

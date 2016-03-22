@@ -17,8 +17,8 @@
  * along with Hudson.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _YAHOODRIVER_HPP_
-#define _YAHOODRIVER_HPP_
+#ifndef _TREASURYBENCHMARKDRIVER_HPP_
+#define _TREASURYBENCHMARKDRIVER_HPP_
 
 #ifdef WIN32
 #pragma warning (disable:4290)
@@ -38,11 +38,11 @@
 namespace Series
 {
     
-    class YahooDriver: public FileDriver
+    class TreasuryBenchmarkDriver: public FileDriver
     {
     public:
-        YahooDriver(void);
-        ~YahooDriver(void);
+        TreasuryBenchmarkDriver(void);
+        ~TreasuryBenchmarkDriver(void);
         
         virtual bool open(const std::string& filename);
         virtual void close(void);
@@ -52,12 +52,17 @@ namespace Series
     private:
         enum FIELDS_POS {
             DATE = 0,
-            OPEN,
-            HIGH,
-            LOW,
-            CLOSE,
-            VOLUME,
-            ADJCLOSE
+            DGS1MO,
+            DGS3MO,
+            DGS6MO,
+            DGS1,
+            DGS2,
+            DGS3,
+            DGS5,
+            DGS7,
+            DGS10,
+            DGS20,
+            DGS30
         };
         
     private:
@@ -66,6 +71,6 @@ namespace Series
         unsigned _linenum;
     };
     
-} // namespace Series
+}
 
-#endif // _YAHOODRIVER_HPP_
+#endif // _TREASURYBENCHMARKDRIVER_HPP_

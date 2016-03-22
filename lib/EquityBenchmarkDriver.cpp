@@ -26,27 +26,27 @@
 #include <boost/tokenizer.hpp>
 
 // Series
-#include "YahooDriver.hpp"
+#include "EquityBenchmarkDriver.hpp"
 
 using namespace std;
 using namespace boost;
 using namespace boost::gregorian;
 
 
-Series::YahooDriver::YahooDriver(void):
+Series::EquityBenchmarkDriver::EquityBenchmarkDriver(void):
 _linenum(0)
 {
 }
 
 
-Series::YahooDriver::~YahooDriver(void)
+Series::EquityBenchmarkDriver::~EquityBenchmarkDriver(void)
 {
     if( _infile.is_open() )
         _infile.close();
 }
 
 
-bool Series::YahooDriver::open(const std::string& filename)
+bool Series::EquityBenchmarkDriver::open(const std::string& filename)
 {
     // Check if another file was open previously
     if( _infile.is_open() ) {
@@ -66,7 +66,7 @@ bool Series::YahooDriver::open(const std::string& filename)
 }
 
 
-void Series::YahooDriver::close(void)
+void Series::EquityBenchmarkDriver::close(void)
 {
     if( _infile.is_open() )
         _infile.close();
@@ -77,7 +77,7 @@ void Series::YahooDriver::close(void)
 }
 
 
-bool Series::YahooDriver::next(DayPrice& dp) throw(Series::DriverException)
+bool Series::EquityBenchmarkDriver::next(DayPrice& dp) throw(Series::DriverException)
 {
     if( _infile.eof() )
         return false;
@@ -113,28 +113,8 @@ bool Series::YahooDriver::next(DayPrice& dp) throw(Series::DriverException)
             }
                 break;
                 
-            case OPEN:
-                dp.open = atof(field.c_str());
-                break;
-                
-            case HIGH:
-                dp.high = atof(field.c_str());
-                break;
-                
-            case LOW:
-                dp.low = atof(field.c_str());
-                break;
-                
-            case CLOSE:
-                dp.close = atof(field.c_str());
-                break;
-                
-            case VOLUME:
-                dp.volume = atoi(field.c_str());
-                break;
-                
-            case ADJCLOSE:
-                dp.adjclose = atof(field.c_str());
+            case RETURN:
+                dp.high = dp.low = dp.open = dp.close = dp.adjclose = atof(field.c_str());
                 break;
                 
             default: {
@@ -149,7 +129,7 @@ bool Series::YahooDriver::next(DayPrice& dp) throw(Series::DriverException)
 }
 
 
-bool Series::YahooDriver::eof(void)
+bool Series::EquityBenchmarkDriver::eof(void)
 {
     return _infile.eof();
 }

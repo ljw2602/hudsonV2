@@ -48,13 +48,8 @@ void EODBalanceSet::initialize(const boost::gregorian::date& dt, const std::stri
     
     EODBalancePtr pCASH(new EODBalance(CASH, dt, _initial_capital));
     insert(pCASH);
-    EODBalancePtr pTOTAL(new EODBalance(TOTAL, dt, _initial_capital));
-    insert(pTOTAL);
-
-//    std::cout << "Initialized" << std::endl;
-//    for (const_iterator it = begin(); it != end(); it++) {
-//        (*it)->print();
-//    }
+//    EODBalancePtr pTOTAL(new EODBalance(TOTAL, dt, _initial_capital));
+//    insert(pTOTAL);
 }
 
 
@@ -184,8 +179,39 @@ void EODBalanceSet::print(void) const {
     for (EODBalanceSet::const_iterator it = its.first; it != its.second; it++) {
         (*it)->print();
     }
-
     return;
+}
+
+std::map<boost::gregorian::date, double> EODBalanceSet::monthly(const std::set<boost::gregorian::date>& EOMdate) const {
+    name_pair its = equal_range(TOTAL);
+    std::map<boost::gregorian::date, double> EOD;
+    for (EODBalanceSet::const_iterator it = its.first; it != its.second; it++) {
+        EOD.insert( std::pair<boost::gregorian::date, double>((*it)->dt, (*it)->balance) );
+    }
+
+    std::map<boost::gregorian::date, double> EOM;
+    for (std::set<boost::gregorian::date>::const_iterator pdate = EOMdate.begin(); pdate != EOMdate.end(); pdate++) {
+        boost::gregorian::date dt = (*pdate);
+        EOM.insert( *EOD.find(dt) );
+    }
+    
+    return EOM;
+}
+
+std::vector<double> EODBalanceSet::monthly_ret(const std::set<boost::gregorian::date>& m_date) const {
+    
+    std::map<boost::gregorian::date, double> m_total = monthly(m_date);
+
+    std::map<boost::gregorian::date, double>::const_iterator it = m_total.begin();
+    std::vector<double> result;
+    double prev = it->second; it++;
+    for (; it != m_total.end(); it++) {
+        double now = it->second;
+        double ret = (now-prev)/prev * 100;
+        result.push_back(ret);
+        prev = it->second;
+    }
+    return result;
 }
 
 void EODBalanceSet::export_to_csv(void) const {

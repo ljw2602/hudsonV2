@@ -48,8 +48,8 @@ bin: $(BIN)
 %.o: %.cpp
 	$(CXX) -c $(INCLUDES) $(DEFS) $(CPPFLAGS) $(CFLAGS) $< -o $@
 
-etf: $(LIB) etf.o ETFTrader.o
-	$(CXX) -o $@ $(LDFLAGS) etf.o ETFTrader.o $(LIBPATH) $(LIBS)
+etf: $(LIB) etf.o ETFTrader.o DB.o
+	$(CXX) -o $@ $(LDFLAGS) etf.o ETFTrader.o DB.o $(LIBPATH) $(LIBS)
 
 clean:
 	\rm -f *.o *.d core
